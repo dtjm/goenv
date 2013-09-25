@@ -18,5 +18,5 @@ in this goenv can then `import mypackage`.
 **Makefile** includes these targets:
 
 - *clean*: Remove binaries and compiled packages
-- *cover*: Run code coverage on all packages
+- *cover*: Run code coverage on all packages and renders it to `coverage/index.html`
 - *test*: Run tests on all packages
