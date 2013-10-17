@@ -6,7 +6,7 @@ cover/profile: src/**/*.go
 	for pkg in `go list ./...`; do \
 		echo "go test -coverprofile=cover/$$pkg.out $$pkg"; \
 		mkdir -p cover/$$pkg; \
-		go test -coverprofile=cover/$$pkg.out $$pkg; \
+		go test -covermode=count -coverprofile=cover/$$pkg.out $$pkg; \
 	done
 	echo "mode: count" > cover/profile
 	for i in `find cover -name *.out`; do \
