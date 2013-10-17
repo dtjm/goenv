@@ -1,19 +1,25 @@
-cover: coverage/index.html
-coverage/index.json: bin/gocov src/sendlib/**/*.go
-	mkdir -p coverage
-	bin/gocov test ./... > coverage/index.json
-	bin/gocov report < coverage/index.json
-coverage/index.html: bin/gocov-html coverage/index.json
-	mkdir -p coverage
-	bin/gocov-html < coverage/index.json > coverage/index.html
-bin/gocov:
-	. goenv.sh
-bin/gocov-html:
-	. goenv.sh
+cover: cover/profile
+	go tool cover -func=cover/profile
+
+cover/profile: src/**/*.go
+	mkdir -p cover
+	for pkg in `go list ./...`; do \
+		echo "go test -coverprofile=cover/$$pkg.out $$pkg"; \
+		mkdir -p cover/$$pkg; \
+		go test -coverprofile=cover/$$pkg.out $$pkg; \
+	done
+	echo "mode: count" > cover/profile
+	for i in `find cover -name *.out`; do \
+		tail -n +2 $$i >> cover/profile; \
+		done
+
+cover/index.html: cover/profile
+	go tool cover -html cover/profile -o cover/index.html
 
 test:
 	go test ./...
+
 clean:
-	rm -rf coverage pkg bin
-version:
-	go version
+	rm -rf cover pkg bin
+
+.PHONY: cover

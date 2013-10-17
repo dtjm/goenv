@@ -1,5 +1,5 @@
 *.test
 bin
-coverage/
+cover/
 pkg
 src/github.com
