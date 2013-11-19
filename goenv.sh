@@ -20,3 +20,8 @@ if [ ! -x bin/gocov-html ]; then
     echo "installing gocov-html into $GOBIN"
     GOBIN=$GOBIN go get github.com/matm/gocov-html
 fi
+
+if [ ! -x bin/godep ]; then
+    echo "installing godep into $GOBIN"
+    GOBIN=$GOBIN go get github.com/kr/godep
+fi
