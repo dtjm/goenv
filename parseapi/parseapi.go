@@ -166,6 +166,8 @@ func (s *Server) QueueJob(job *postJob) {
 	return
 }
 
+// Takes an SMTP address for incoming Parse API mail and an http address for
+// service management requests
 func (s *Server) ListenAndServe(smtpAddr string, httpAddr string) error {
 	if s.postQueue == nil {
 		s.postQueue = make(chan *postJob, 1000)
