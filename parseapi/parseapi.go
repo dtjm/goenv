@@ -92,6 +92,7 @@ func (s *Server) HandleMail(e *smtp.Envelope, session *smtp.Session) {
 	}
 
 	err = session.WriteResponse(250, fmt.Sprintf("Queued message %s", messageID))
+
 	if err != nil {
 		s.Syslog.Infof("Error writing response to client, removing message: %s %s", messageID, err)
 		os.Remove(filepath)
@@ -206,6 +207,11 @@ func (s *Server) ListenAndServe(smtpAddr string, httpAddr string) error {
 	go s.startPostWorkers()
 
 	return <-exitChan
+}
+
+// Perform a graceful shutdown, with a forceful termination after `timeout` duration
+func (s *Server) Shutdown(timeout time.Duration) {
+	s.smtpServer.Shutdown(timeout)
 }
 
 func init() {

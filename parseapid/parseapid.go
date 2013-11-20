@@ -8,6 +8,8 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -28,6 +30,9 @@ func main() {
 	// Create logger
 	syslogger := sglog.NewWriterSyslog(os.Stderr)
 
+	pid := os.Getpid()
+	syslogger.Infof("Starting with PID %d", pid)
+
 	// Create byteCache for apid
 	byteCache := cache.NewMemoryCache(2<<20, 2<<24)
 
@@ -45,8 +50,28 @@ func main() {
 		Version:           VERSION,
 	}
 
-	err = server.ListenAndServe(":25", ":6970")
-	if err != nil {
-		log.Fatal(err)
-	}
+	exit := make(chan int)
+	sigChan := make(chan os.Signal, 1)
+	go func() {
+		err = server.ListenAndServe(":25", ":6970")
+		if err != nil {
+			syslogger.Errf("Error starting parseapid server: %s", err)
+			exit <- 1
+		}
+	}()
+
+	signal.Notify(sigChan, syscall.SIGTERM)
+
+	go func() {
+		for sig := range sigChan {
+			switch sig {
+			case syscall.SIGTERM:
+				server.Shutdown(10 * time.Second)
+				exit <- 0
+			}
+		}
+	}()
+
+	code := <-exit
+	os.Exit(code)
 }

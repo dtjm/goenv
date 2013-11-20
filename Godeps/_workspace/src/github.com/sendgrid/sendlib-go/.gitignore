@@ -1,5 +1,0 @@
-*.test
-bin
-coverage/
-pkg
-src/github.com
