@@ -1,0 +1,9 @@
+[submodule "src/github.com/axw/gocov"]
+	path = src/github.com/axw/gocov
+	url = https://github.com/axw/gocov
+[submodule "src/github.com/matm/gocov-html"]
+	path = src/github.com/matm/gocov-html
+	url = https://github.com/matm/gocov-html
+[submodule "src/github.com/bitly/go-simplejson"]
+	path = src/github.com/bitly/go-simplejson
+	url = git@github.com:bitly/go-simplejson.git

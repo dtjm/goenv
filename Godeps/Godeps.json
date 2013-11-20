@@ -1,0 +1,14 @@
+{
+	"ImportPath": "github.com/sendgrid/go-parseapid",
+	"GoVersion": "go1.2rc3",
+	"Packages": [
+		"./parseapid",
+		"./parseapid"
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/sendgrid/sendlib-go",
+			"Rev": "9ed71307eb4a358fbff7308b58a75fea14b3dcd0"
+		}
+	]
+}

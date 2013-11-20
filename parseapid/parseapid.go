@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/sendgrid/go-parseapid/parseapi"
 	"github.com/sendgrid/sendlib-go/cache"
 	sglog "github.com/sendgrid/sendlib-go/log"
 	"github.com/sendgrid/sendlib-go/net/apid"
 	"log"
 	"math/rand"
 	"os"
-	"parseapi"
 	"time"
 )
 
