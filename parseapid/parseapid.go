@@ -39,7 +39,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Create byteCache for apid
-	byteCache := cache.NewMemoryCache(2<<20, 2<<24)
+	byteCache := cache.NewMemoryCache(2 << 20)
 
 	apidAddr := fmt.Sprintf("%s:%d",
 		cfg.GetString("parseapid.APID_SERVER", "127.0.0.1"),

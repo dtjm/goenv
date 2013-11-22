@@ -11,6 +11,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"net/mail"
 	"net/url"
 	"os"
 	"strconv"
@@ -115,15 +116,38 @@ func (s *Server) startPostWorkers() {
 	for i := uint(0); i < s.WorkerConcurrency; i++ {
 		go func() {
 			for job := range s.postQueue {
-				data, err := ioutil.ReadFile("/var/spool/parsed/incoming/" + job.MessageID)
-				if err != nil {
-					s.Syslog.Errf("Error reading message, requeueing: '%s' %+v", err, job)
-					s.QueueJob(job)
-					continue
-				}
+
+				var rsp *http.Response
+				var err error
 				form := url.Values{}
-				form.Set("email", string(data))
-				rsp, err := http.PostForm(job.ParseHostSettings.URL, form)
+				if job.ParseHostSettings.SendRaw {
+					data, err := ioutil.ReadFile("/var/spool/parsed/incoming/" + job.MessageID)
+					if err != nil {
+						s.Syslog.Errf("Error reading message, requeueing: '%s' %+v", err, job)
+						s.QueueJob(job)
+						continue
+					}
+					form.Set("email", string(data))
+				} else {
+					file, err := os.Open("/var/spool/parsed/incoming/" + job.MessageID)
+					if err != nil {
+						s.Syslog.Errf("Error reading message, requeueing: '%s' %+v", err, job)
+						s.QueueJob(job)
+						continue
+					}
+
+					message, err := mail.ReadMessage(file)
+					if err != nil {
+						s.Syslog.Errf("Unable to parse file '%s': %s", job.MessageID, err)
+						//s.QueueJob(job)
+						continue
+					}
+
+					form.Set("from", message.Header.Get("From"))
+					form.Set("to", message.Header.Get("To"))
+					form.Set("subject", message.Header.Get("Subject"))
+				}
+				rsp, err = http.PostForm(job.ParseHostSettings.URL, form)
 
 				if err != nil {
 					s.Syslog.Errf("Error posting, requeueing: '%s' job: %+v", err, job)
